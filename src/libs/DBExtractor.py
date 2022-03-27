@@ -1,8 +1,8 @@
-from bz2 import compress
 import json
 import pyodbc
 import csv
 import gzip
+import shutil
 
 class DBExtractor():
     def __init__(self, configFile: str):
@@ -33,7 +33,7 @@ class DBExtractor():
             #
             print("CONNECTION OK")
             cursor = conn.cursor()
-            cursor.execute("select * from Item where ItemId between 1 and 10")
+            cursor.execute("select * from Item where ItemId between 1 and 20")
             data = cursor.fetchall()
             
             header = ['ItemId', 'ItemDocumentNbr','CustomerName','CreateDate', 'UpdateDate']
@@ -44,20 +44,21 @@ class DBExtractor():
                 writer.writerow(header)
                 i = 0
                 rows = []
-                for row in data: 
+                for row in data: ##discard deleted Item Versions
                     if row[2] != 1:
                         rows.append(row)
 
                 
                 for row in rows:
-                    if row == rows[-1]:
-                        
-                        row = row[:4] + row[5:]
-                        row = row[:2] + row[3:]
-                        
-                        writer.writerow(row)
-                    elif row[0] != rows[i+1][0]: 
-                        
+                    
+                    customer = row[3]
+                    
+                    if row == rows[-1] or row[0] != rows[i+1][0]: ##check if it is the last row
+                        if customer.startswith("99"):
+                            print('LOCAL')
+                        else:
+                            print('EXTERNAL')
+                            
                         row = row[:4] + row[5:]
                         row = row[:2] + row[3:]
                         
@@ -65,8 +66,10 @@ class DBExtractor():
 
                     i = i + 1
             f.close()     
-            
-            
+
+            with open('list.csv', 'rb') as f_in: ##GZIP compress
+                with gzip.open('list.csv.gz', 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
             #
             # End of exercise
         except:
