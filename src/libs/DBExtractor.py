@@ -33,7 +33,8 @@ class DBExtractor():
             #
             print("CONNECTION OK")
             cursor = conn.cursor()
-            cursor.execute("select * from Item where ItemId between 1 and 20")
+            cursor.execute("select * from Item where ItemId between 1 and 50") ##for testing only from 1 to 50 Item IDs,
+            ## USE: "cursor.execute("select * from Item")" for the full database
             data = cursor.fetchall()
             
             header = ['ItemId', 'ItemDocumentNbr','CustomerName','CreateDate', 'UpdateDate']#, 'ItemSource']
@@ -55,13 +56,12 @@ class DBExtractor():
                     
                     if row == rows[-1] or row[0] != rows[i+1][0]: ##check if it is the last row
                         row = list(row)
-                        if customer.startswith("99"):
+                        if customer.startswith("99"): ##ItemSource column addition
                             row.append('Local')
                         
                         else:
                             row.append('External')
-                        row = tuple(row)    
-                        print(row)
+                        row = tuple(row)
                         row = row[:4] + row[5:]
                         row = row[:2] + row[3:]
                         

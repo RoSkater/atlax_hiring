@@ -1,1 +1,4 @@
 pyodbc
+csv
+gzip
+shutil
