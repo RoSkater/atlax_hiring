@@ -37,7 +37,7 @@ class DBExtractor():
             ## USE: "cursor.execute("select * from Item")" for the full database
             data = cursor.fetchall()
             
-            header = ['ItemId', 'ItemDocumentNbr','CustomerName','CreateDate', 'UpdateDate']#, 'ItemSource']
+            header = ['ItemId', 'ItemDocumentNbr','CustomerName','CreateDate', 'UpdateDate', 'ItemSource']
             
             with open('list.csv', 'w', encoding='UTF8') as f:
                 writer = csv.writer(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
